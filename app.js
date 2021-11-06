@@ -10,6 +10,20 @@ const Employees = [
     {'employeeId': '5', 'name': 'Jim Jordan', 'full time': 'true', 'join date': '2010/SEP/21'}
 ];
 
+const createEmployee = (inputValues, employeeList) => {
+    if(inputValues.hasOwnProperty('name') && inputValues.hasOwnProperty('full time') && inputValues.hasOwnProperty('join date')) {
+        let nextOpenId = employeeList.length + 1;
+        return {
+            'employeeId': nextOpenId,
+            'name': inputValues['name'],
+            'full time': inputValues['full time'],
+            'join date': inputValues['join date']
+        }
+    } else {
+        console.log(`Error: Must specify the new employee's name, full time status and join date`);
+    }
+}
+
 app.get('/Employees', (req, res, next) => {
     res.status(200).send(Employees);
 });
@@ -24,6 +38,17 @@ app.get('/Employees/:employeeId', (req, res, next) => {
     } else {
         res.status(404).send();
         console.log('Employee ID not found!');
+    }
+});
+
+app.post('/Employees', (req, res, next) => {
+    const employeeAdded = createEmployee(req.query, Employees);
+    if(employeeAdded) {
+        Employees.push(employeeAdded);
+        res.status(201).send(Employees[req.query]);
+        console.log(Employees[req.query]);
+    } else {
+        res.status(400).send();
     }
 });
 
