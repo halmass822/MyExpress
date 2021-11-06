@@ -3,16 +3,25 @@ const express = require('express');
 const app = express();
 
 const Employees = [
-    {'employeeId': '1', 'name': 'John Doe', 'full time': 'false', 'join date': '2011/JAN/04'},
-    {'employeeId': '2', 'name': 'Jane Doe', 'full time': 'false', 'join date': '2015/MAR/18'},
-    {'employeeId': '3', 'name': 'Robert Bobbington', 'full time': 'true', 'join date': '2010/FEB/6'},
-    {'employeeId': '4', 'name': 'Harry Horton', 'full time': 'false', 'join date': '2017/DEC/19'},
-    {'employeeId': '5', 'name': 'Jim Jordan', 'full time': 'true', 'join date': '2010/SEP/21'}
+    {'employeeId': 1, 'name': 'John Doe', 'full time': 'false', 'join date': '2011/JAN/04'},
+    {'employeeId': 2, 'name': 'Jane Doe', 'full time': 'false', 'join date': '2015/MAR/18'},
+    {'employeeId': 3, 'name': 'Robert Bobbington', 'full time': 'true', 'join date': '2010/FEB/6'},
+    {'employeeId': 4, 'name': 'Harry Horton', 'full time': 'false', 'join date': '2017/DEC/19'},
+    {'employeeId': 5, 'name': 'Jim Jordan', 'full time': 'true', 'join date': '2010/SEP/21'}
 ];
+
+let employeeCounter = Employees.length;
+
+const getIndexByEmployeeId = (Id) => {
+    return Employees.findIndex((element) => {
+        return element.employeeId === Number(Id);
+    })
+};
 
 const createEmployee = (inputValues, employeeList) => {
     if(inputValues.hasOwnProperty('name') && inputValues.hasOwnProperty('full time') && inputValues.hasOwnProperty('join date')) {
-        let nextOpenId = employeeList.length + 1;
+        employeeCounter ++;
+        nextOpenId = employeeCounter;
         return {
             'employeeId': nextOpenId,
             'name': inputValues['name'],
@@ -41,12 +50,22 @@ app.get('/Employees/:employeeId', (req, res, next) => {
     }
 });
 
+app.delete('/Employees/:employeeId', (req, res, next) => {
+    const targetEmployeeIndex = getIndexByEmployeeId(req.params.employeeId);
+    if (targetEmployeeIndex !== -1) {
+        Employees.splice(targetEmployeeIndex, 1);
+        res.status(204).send();
+    } else {
+        res.status(404).send();
+        console.log(`Employee ${req.params.employeeId} not found`);
+    }
+})
+
 app.post('/Employees', (req, res, next) => {
     const employeeAdded = createEmployee(req.query, Employees);
     if(employeeAdded) {
         Employees.push(employeeAdded);
-        res.status(201).send(Employees[req.query]);
-        console.log(Employees[req.query]);
+        res.status(201).send(employeeAdded);
     } else {
         res.status(400).send();
     }
