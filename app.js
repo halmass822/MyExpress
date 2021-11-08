@@ -12,6 +12,8 @@ const Employees = [
 
 let employeeCounter = Employees.length;
 
+//Helper functions
+
 const getIndexByEmployeeId = (Id) => {
     return Employees.findIndex((element) => {
         return element.employeeId === Number(Id);
@@ -33,32 +35,34 @@ const createEmployee = (inputValues, employeeList) => {
     }
 }
 
+//Middleware
+
+app.use('/Employees/:employeeId', (req, res, next) => {
+    const targetEmployeeIndex = getIndexByEmployeeId(req.params.employeeId);
+    const targetEmployee = Employees[targetEmployeeIndex];
+    if(targetEmployee) {
+        req.index = targetEmployeeIndex;
+        req.employee = targetEmployee;
+        next();
+    } else {
+        res.status(404).send();
+        console.log(`Employee Id ${req.params.employeeId} not found`);
+    }
+})
+
+//APIs
+
 app.get('/Employees', (req, res, next) => {
     res.status(200).send(Employees);
 });
 
 app.get('/Employees/:employeeId', (req, res, next) => {
-    const employeeIdRequested = String(req.params.employeeId);
-    const result = Employees.find(({employeeId}) => {
-        return employeeId === employeeIdRequested;
-    })
-    if(result) {
-        res.status(200).send(result);
-    } else {
-        res.status(404).send();
-        console.log('Employee ID not found!');
-    }
+        res.status(200).send(req.employee);
 });
 
 app.delete('/Employees/:employeeId', (req, res, next) => {
-    const targetEmployeeIndex = getIndexByEmployeeId(req.params.employeeId);
-    if (targetEmployeeIndex !== -1) {
-        Employees.splice(targetEmployeeIndex, 1);
+        Employees.splice(req.index, 1);
         res.status(204).send();
-    } else {
-        res.status(404).send();
-        console.log(`Employee ${req.params.employeeId} not found`);
-    }
 })
 
 app.post('/Employees', (req, res, next) => {
@@ -71,6 +75,11 @@ app.post('/Employees', (req, res, next) => {
     }
 });
 
+app.put('/Employees/:employeeId', (req, res, next) => {
+        Object.assign(Employees[req.index], req.query);
+        res.status(200).send(Employees[req.index]);
+})
+
 app.listen(4001, () => {
-    console.log('Server listening on 4001\n version 1.2');
+    console.log('Server listening on 4001\n version 1.3');
 });
