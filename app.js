@@ -134,9 +134,29 @@ app.get('/Clients', (req, res, next) => {
 })
 
 app.get('/Clients/:clientId', (req, res, next) => {
-        res.status(200).send(req.client);
+    res.status(200).send(req.client);
+})
+
+app.delete('/Clients/:clientId', (req, res, next) => {
+    Clients.splice(req.index, 1);
+    res.status(204).send();
+})
+
+app.post('/Clients', (req, res, next) => {
+    const clientAdded = createClient(req.query, Clients);
+    if(clientAdded) {
+        Clients.push(clientAdded);
+        res.status(201).send(clientAdded);
+    } else {
+        res.status(400).send();
+    }
+})
+
+app.put('/Clients/:clientId', (req, res, next) => {
+    Object.assign(Clients[req.index], req.query);
+    res.status(200).send(Clients[req.index]);
 })
 
 app.listen(4001, () => {
-    console.log('Server listening on 4001\n version 1.4');
+    console.log('Server listening on 4001\n version 1.5');
 });
