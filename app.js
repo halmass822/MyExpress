@@ -52,6 +52,22 @@ const getIndexByClientId = (Id) => {
     })
 }
 
+const createClient = (inputValues, employeeList) => {
+    if (inputValues.hasOwnProperty('name') && inputValues.hasOwnProperty('customer since')) {
+        clientCounter ++;
+        nextOpenId = clientCounter;
+        return {
+            'clientId': nextOpenId,
+            'name': inputValues['name'],
+            'balance': (inputValues['balance'] || 0), //initial balance and delinquency defaults to 0 and false
+            'delinquent': (inputValues['delinquent'] || false),
+            'customer since': inputValues['customer since']
+        }
+    } else {
+        console.log(`Error: Must specify client's name, join date`)
+    }
+}
+
 //Middleware
 
 app.use('/Employees/:employeeId', (req, res, next) => {
@@ -64,6 +80,19 @@ app.use('/Employees/:employeeId', (req, res, next) => {
     } else {
         res.status(404).send();
         console.log(`Employee Id ${req.params.employeeId} not found`);
+    }
+})
+
+app.use('/Clients/:clientId', (req, res, next) => {
+    const targetClientIndex = getIndexByClientId(req.params.clientId);
+    const targetClient = Clients[targetClientIndex];
+    if(targetClient) {
+        req.index = targetClientIndex;
+        req.client = targetClient;
+        next();
+    } else {
+        res.status(404).send();
+        console.log(`Client Id ${req.params.clientId} not found`);
     }
 })
 
@@ -105,14 +134,7 @@ app.get('/Clients', (req, res, next) => {
 })
 
 app.get('/Clients/:clientId', (req, res, next) => {
-    const targetIndex = getIndexByClientId(req.params.clientId);
-    const targetClient = Clients[targetIndex];
-    if(targetClient) {
-        res.status(200).send(targetClient);
-    } else {
-        console.log(`clientId ${req.params.clientId} not found`);
-        res.status(404).send();
-    }
+        res.status(200).send(req.client);
 })
 
 app.listen(4001, () => {
