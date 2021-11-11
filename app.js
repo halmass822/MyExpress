@@ -23,6 +23,7 @@ let clientCounter = Clients.length;
 
 //Helper functions
 
+    //Employees
 const getIndexByEmployeeId = (Id) => {
     return Employees.findIndex((element) => {
         return element.employeeId === Number(Id);
@@ -44,6 +45,13 @@ const createEmployee = (inputValues, employeeList) => {
     }
 }
 
+    //Clients
+const getIndexByClientId = (Id) => {
+    return Clients.findIndex((element) => {
+        return element.clientId === Number(Id);
+    })
+}
+
 //Middleware
 
 app.use('/Employees/:employeeId', (req, res, next) => {
@@ -60,6 +68,7 @@ app.use('/Employees/:employeeId', (req, res, next) => {
 })
 
 //APIs
+    //Employees
 
 app.get('/Employees', (req, res, next) => {
     res.status(200).send(Employees);
@@ -89,6 +98,23 @@ app.put('/Employees/:employeeId', (req, res, next) => {
         res.status(200).send(Employees[req.index]);
 })
 
+    //Clients
+
+app.get('/Clients', (req, res, next) => {
+    res.status(200).send(Clients);
+})
+
+app.get('/Clients/:clientId', (req, res, next) => {
+    const targetIndex = getIndexByClientId(req.params.clientId);
+    const targetClient = Clients[targetIndex];
+    if(targetClient) {
+        res.status(200).send(targetClient);
+    } else {
+        console.log(`clientId ${req.params.clientId} not found`);
+        res.status(404).send();
+    }
+})
+
 app.listen(4001, () => {
-    console.log('Server listening on 4001\n version 1.3');
+    console.log('Server listening on 4001\n version 1.4');
 });
