@@ -5,12 +5,21 @@ const app = express();
 const Employees = [
     {'employeeId': 1, 'name': 'John Doe', 'full time': 'false', 'join date': '2011/JAN/04'},
     {'employeeId': 2, 'name': 'Jane Doe', 'full time': 'false', 'join date': '2015/MAR/18'},
-    {'employeeId': 3, 'name': 'Robert Bobbington', 'full time': 'true', 'join date': '2010/FEB/6'},
+    {'employeeId': 3, 'name': 'Robert Bobbington', 'full time': 'true', 'join date': '2010/FEB/06'},
     {'employeeId': 4, 'name': 'Harry Horton', 'full time': 'false', 'join date': '2017/DEC/19'},
     {'employeeId': 5, 'name': 'Jim Jordan', 'full time': 'true', 'join date': '2010/SEP/21'}
 ];
 
+const Clients = [
+    {'clientId': 1, 'name': 'James Kerry', 'balance': 0, 'delinquent': false, 'customer since': '2020/FEB/06'},
+    {'clientId': 2, 'name': 'Jimmy Jorgensen', 'balance': 0, 'delinquent': false, 'customer since': '2020/MAR/03'},
+    {'clientId': 3, 'name': 'Lars Andersson', 'balance': 150.47, 'delinquent': false, 'customer since': '2020/SEP/20'},
+    {'clientId': 4, 'name': 'John Smith', 'balance': 0, 'delinquent': false, 'customer since': '2019/OCT/18'},
+    {'clientId': 5, 'name': 'Late McBills', 'balance': 432.86, 'delinquent': true, 'customer since': '2021/AUG/25'},
+]
+
 let employeeCounter = Employees.length;
+let clientCounter = Clients.length;
 
 //Helper functions
 
