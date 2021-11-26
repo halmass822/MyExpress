@@ -1,6 +1,11 @@
 const e = require('express');
 const express = require('express');
 const app = express();
+const sqlite = require('sqlite3');
+const db = new sqlite.Database('./contractors.sqlite');
+const { createTestArray } = require('./utilities.js')
+
+//DATA
 
 const Employees = [
     {'employeeId': 1, 'name': 'John Doe', 'full time': 'false', 'join date': '2011/JAN/04'},
@@ -17,6 +22,10 @@ const Clients = [
     {'clientId': 4, 'name': 'John Smith', 'balance': 0, 'delinquent': false, 'customer since': '2019/OCT/18'},
     {'clientId': 5, 'name': 'Late McBills', 'balance': 432.86, 'delinquent': true, 'customer since': '2021/AUG/25'},
 ]
+db.serialize(() => {
+    db.run('DROP TABLE IF EXISTS LocalContractors');
+    db.run('CREATE TABLE LocalContractors(id INTEGER PRIMARKY KEY, name TEXT, phoneNumber VARCHAR(12), skills TEXT, currentProjects TEXT)');
+});
 
 let employeeCounter = Employees.length;
 let clientCounter = Clients.length;
