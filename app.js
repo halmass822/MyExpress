@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const sqlite = require('sqlite3');
 const db = new sqlite.Database('./contractors.sqlite');
-const { createTestArray } = require('./utilities.js')
+const { createTestArray, seedDataTable } = require('./utilities.js')
 
 //DATA
 
@@ -21,11 +21,9 @@ const Clients = [
     {'clientId': 3, 'name': 'Lars Andersson', 'balance': 150.47, 'delinquent': false, 'customer since': '2020/SEP/20'},
     {'clientId': 4, 'name': 'John Smith', 'balance': 0, 'delinquent': false, 'customer since': '2019/OCT/18'},
     {'clientId': 5, 'name': 'Late McBills', 'balance': 432.86, 'delinquent': true, 'customer since': '2021/AUG/25'},
-]
-db.serialize(() => {
-    db.run('DROP TABLE IF EXISTS LocalContractors');
-    db.run('CREATE TABLE LocalContractors(id INTEGER PRIMARKY KEY, name TEXT, phoneNumber VARCHAR(12), skills TEXT, currentProjects TEXT)');
-});
+];
+
+seedDataTable(10);
 
 let employeeCounter = Employees.length;
 let clientCounter = Clients.length;
@@ -166,6 +164,29 @@ app.put('/Clients/:clientId', (req, res, next) => {
     res.status(200).send(Clients[req.index]);
 })
 
+    //Seed Table
+
+app.get('/seedTable', (req, res, next) => {
+        db.all('SELECT * FROM seedTable', (err,rows) => {
+            res.status(200).send(rows);
+        });
+});
+
+app.get('/seedTable/:id', (req, res, next) => {
+    db.get('SELECT * FROM seedTable WHERE id IS $id', 
+    {
+        $id: req.params.id
+    },
+    (err, row) => {
+        if(row) {
+            res.status(200).send(row);
+        } else {
+            res.status(404).send();
+        }
+        
+    })
+});
+
 app.listen(4001, () => {
-    console.log('Server listening on 4001\n version 1.5');
+    console.log('Server listening on 4001\n version 1.6');
 });

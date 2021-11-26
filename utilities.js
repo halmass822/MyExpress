@@ -1,6 +1,7 @@
 const sqlite = require('sqlite3');
+const db = new sqlite.Database('./contractors.sqlite')
 
-const firstNames = ['Alex', 'Abraham', 'Ajay', 'Andrew', 'Bart', 'Barry', 'Brady', 'Bradley', 'Cory', 'Charlie', 'Camille', 'Carrie', 'Frank', 'Francesca', 'Grace', 'Hazem', 'Harry', 'Ingrid', 'Jack', 'Julie', 'Kerry', 'Lawrence', 'Marcus', 'Marie', 'Nancy', 'Oscar', 'Peter', 'Quincy', 'Raymond', 'Sally', 'Tim', 'Victor', 'Winfred', 'Xavier', 'Zachary'];
+const firstNames = ['Alex', 'Abraham', 'Ajay', 'Andrew', 'Bart', 'Barry', 'Brady', 'Bradley', 'Cory', 'Charlie', 'Camille', 'Carrie', 'Frank', 'Francesca', 'Grace', 'Hazem', 'Harry', 'Ingrid', 'Jack', 'Julie', 'Kerry', 'Lawrence', 'Marcus', 'Marie', 'Nancy', 'Oscar', 'Peter', 'Quincy', 'Raymond', 'Sally', 'Tim', 'Tali', 'Victor', 'Winfred', 'Xavier', 'Zachary'];
 const lastNames = ['Armaud', 'Brown', 'Cameron', 'Darby', 'Erb', 'Faust', 'George', 'Henry', 'Irving', 'Kalman', 'Leonid', 'Marvolo', 'Nicholas', 'Oak', 'Parker', 'Rink', 'Simons', 'Smith', 'Terrence', 'Unger', 'Winston', 'Zeigler'];
 
 const digitize = (input) => { //turns one digit inputs into 2 i.e 1 into 01, 5 into 05, 10 into 10
@@ -51,4 +52,20 @@ const createTestArray = (length = 20, format = 'yyyymmdd') => {
     return output;
 }
 
-module.exports.createTestArray = createTestArray;
+const seedDataTable = (length) => {
+    db.serialize(() => {
+        db.run('DROP TABLE IF EXISTS seedTable');
+        db.run('CREATE TABLE seedTable(id INTEGER PRIMARY KEY, firstName TEXT, lastName TEXT, dob VARCHAR(8))');
+        createTestArray(length).forEach(seedElement => {
+            db.run('INSERT INTO seedTable(id, firstName, lastName, dob) VALUES($id, $firstName, $lastName, $dob)', 
+            {
+                $id: seedElement.id,
+                $firstName: seedElement.firstName,
+                $lastName: seedElement.lastName,
+                $dob: seedElement.dob
+            })
+        })
+    })
+}
+
+module.exports = { createTestArray, seedDataTable }
