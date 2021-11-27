@@ -173,19 +173,22 @@ app.get('/seedTable', (req, res, next) => {
 });
 
 app.get('/seedTable/:id', (req, res, next) => {
-    db.get('SELECT * FROM seedTable WHERE id IS $id', 
+    db.get('SELECT * FROM seedTable WHERE id IS $id',
     {
         $id: req.params.id
     },
     (err, row) => {
-        if(row) {
-            res.status(200).send(row);
-        } else {
-            res.status(404).send();
-        }
-        
+        return res.status(200).send(row);
     })
 });
+
+app.delete('/seedTable/:id', (req, res, next) => {
+    db.run('DELETE FROM seedTable WHERE id IS $id', 
+    {
+        $id: req.params.id
+    })
+    res.status(204).send();
+})
 
 app.listen(4001, () => {
     console.log('Server listening on 4001\n version 1.6');
