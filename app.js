@@ -190,6 +190,16 @@ app.delete('/seedTable/:id', (req, res, next) => {
     res.status(204).send();
 })
 
+app.post('/seedTable', (req, res, next) => {
+        db.run('INSERT INTO seedTable(id, firstName, lastName, dob) VALUES ($id, $firstName, $lastName, $dob)',
+        {
+            $firstName: req.query.firstName,
+            $lastName: req.query.lastName,
+            $dob: req.query.dob
+        })
+    res.status(201).send(req.query);
+})
+
 app.listen(4001, () => {
     console.log('Server listening on 4001\n version 1.6');
 });
