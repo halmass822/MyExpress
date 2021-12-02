@@ -1,6 +1,11 @@
 const e = require('express');
 const express = require('express');
 const app = express();
+const sqlite = require('sqlite3');
+const db = new sqlite.Database('./contractors.sqlite');
+const { createTestArray, seedDataTable } = require('./utilities.js')
+
+//DATA
 
 const Employees = [
     {'employeeId': 1, 'name': 'John Doe', 'full time': 'false', 'join date': '2011/JAN/04'},
@@ -16,7 +21,9 @@ const Clients = [
     {'clientId': 3, 'name': 'Lars Andersson', 'balance': 150.47, 'delinquent': false, 'customer since': '2020/SEP/20'},
     {'clientId': 4, 'name': 'John Smith', 'balance': 0, 'delinquent': false, 'customer since': '2019/OCT/18'},
     {'clientId': 5, 'name': 'Late McBills', 'balance': 432.86, 'delinquent': true, 'customer since': '2021/AUG/25'},
-]
+];
+
+seedDataTable(10);
 
 let employeeCounter = Employees.length;
 let clientCounter = Clients.length;
@@ -157,6 +164,54 @@ app.put('/Clients/:clientId', (req, res, next) => {
     res.status(200).send(Clients[req.index]);
 })
 
+    //Seed Table
+
+app.get('/seedTable', (req, res, next) => {
+        db.all('SELECT * FROM seedTable', (err,rows) => {
+            res.status(200).send(rows);
+        });
+});
+
+app.get('/seedTable/:id', (req, res, next) => {
+    db.get('SELECT * FROM seedTable WHERE id IS $id',
+    {
+        $id: req.params.id
+    },
+    (err, row) => {
+        return res.status(200).send(row);
+    })
+});
+
+app.delete('/seedTable/:id', (req, res, next) => {
+    db.run('DELETE FROM seedTable WHERE id IS $id', 
+    {
+        $id: req.params.id
+    })
+    res.status(204).send();
+})
+
+app.post('/seedTable', (req, res, next) => {
+        db.run('INSERT INTO seedTable(id, firstName, lastName, dob) VALUES ($id, $firstName, $lastName, $dob)',
+        {
+            $firstName: req.query.firstName,
+            $lastName: req.query.lastName,
+            $dob: req.query.dob
+        })
+    res.status(201).send(req.query);
+})
+
+app.put('/seedTable/:id', (req, res, next) => {
+    var updatedValues = {
+        $id: req.params.id,
+        $firstName: req.query.firstName,
+        $lastName: req.query.lastName,
+        $dob: req.query.dob
+    }
+    db.run('UPDATE seedTable SET firstName = $firstName, lastName = $lastName, dob = $dob WHERE id IS $id',
+    updatedValues);
+    res.status(200).send(req.query);
+})
+
 app.listen(4001, () => {
-    console.log('Server listening on 4001\n version 1.5');
+    console.log('Server listening on 4001\n version 1.7\n');
 });
