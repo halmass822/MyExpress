@@ -200,6 +200,18 @@ app.post('/seedTable', (req, res, next) => {
     res.status(201).send(req.query);
 })
 
+app.put('/seedTable/:id', (req, res, next) => {
+    var updatedValues = {
+        $id: req.params.id,
+        $firstName: req.query.firstName,
+        $lastName: req.query.lastName,
+        $dob: req.query.dob
+    }
+    db.run('UPDATE seedTable SET firstName = $firstName, lastName = $lastName, dob = $dob WHERE id IS $id',
+    updatedValues);
+    res.status(200).send(req.query);
+})
+
 app.listen(4001, () => {
-    console.log('Server listening on 4001\n version 1.6');
+    console.log('Server listening on 4001\n version 1.7\n');
 });
