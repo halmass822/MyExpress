@@ -103,6 +103,20 @@ app.use('/Clients/:clientId', (req, res, next) => {
     }
 })
 
+app.use('/seedTable/:id', (req, res, next) => {
+    db.get('SELECT * FROM seedTable WHERE id IS $id',
+        {$id: req.params.id},
+        (error, row) => {
+            if(row) {
+                req.targetElement = row;
+                next();
+            } else {
+                res.status(404).send();
+            }
+        }
+    )
+})
+
 //APIs
     //Employees
 
@@ -173,13 +187,7 @@ app.get('/seedTable', (req, res, next) => {
 });
 
 app.get('/seedTable/:id', (req, res, next) => {
-    db.get('SELECT * FROM seedTable WHERE id IS $id',
-    {
-        $id: req.params.id
-    },
-    (err, row) => {
-        return res.status(200).send(row);
-    })
+    res.status(200).send(req.targetElement);
 });
 
 app.delete('/seedTable/:id', (req, res, next) => {
