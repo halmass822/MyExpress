@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+
+
 const e = require('express');
 const express = require('express');
 const app = express();
@@ -191,7 +194,7 @@ app.get('/seedTable/:id', (req, res, next) => {
 });
 
 app.delete('/seedTable/:id', (req, res, next) => {
-    db.run('DELETE FROM seedTable WHERE id IS $id', 
+    db.run('DELETE FROM seedTable WHERE id IS $id',
     {
         $id: req.params.id
     })
