@@ -1,0 +1,7 @@
+services:
+  myexpress:
+    build: .
+    ports:
+      - "4001:4001"
+    # runs tini as pid 1 so os signals are handled
+    init: true
